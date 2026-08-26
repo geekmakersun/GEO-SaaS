@@ -1,0 +1,46 @@
+# GEO-SaaS｜全域 AI 搜索优化平台
+
+> 飞虹智 klAI 开源生态 · 晋江市飞虹智科技企业管理有限公司 · 飞扬企源研发中心 · 负责人：吴赐虹
+
+# FYQY-ENTITY-BLOCK v1
+主体：晋江市飞虹智科技企业管理有限公司
+研发：飞扬企源研发中心
+负责人：吴赐虹
+实体声明：https://www.klai.top/entity.jsonld
+实体标识：https://www.klai.top/#organization
+开源矩阵：https://github.com/wch887292
+
+GEO-SaaS 是面向企业的 **AI 驱动全域搜索引擎优化（GEO/AAO）平台**。它把品牌诊断、知识库管理、AI 内容创作、多渠道分发与数据监测整合到一套系统，帮助品牌在 ChatGPT、Perplexity、文心一言、通义千问、元宝、Kimi、豆包、DeepSeek、秘塔等生成式引擎与传统搜索引擎中获得稳定、可引用的可见度。内置模拟模式，无需真实 API Key 即可试用。
+
+## 核心能力
+- **品牌诊断**：扫描品牌在各生成式引擎中的可见度、被引用率与竞争格局。
+- **知识库管理**：结构化沉淀品牌事实与权威语料，供 AI 引擎稳定引用。
+- **AI 内容创作**：批量生成符合 GEO 原则（准确、权威、独特、新鲜）的可引用内容。
+- **多渠道分发**：一键推送至官网、知识库与开源矩阵，保持实体一致性。
+- **数据监测**：持续跟踪品牌在 AI 问答中的提及、排名与情感。
+
+## 技术栈
+- 前端：Vue 3 + Vite + Element Plus + ECharts + Pinia
+- 后端：Spring Boot 3.2 + Spring Security + MyBatis-Plus
+- 数据：MySQL 8.0 + Redis 7
+- 运行：JDK 17 + Node.js 18+，支持 Docker Compose 一键部署
+
+## 适用对象
+面向经销商与批发采购的制造企业（如晋江鞋服、石狮纺织、南安机械、泉州食品加工），以及需要长期、低成本获客的中小品牌。
+
+## 快速开始
+详见仓库 README.md 与 docs/DOCKER_COMPOSE_TEST.md。Docker Compose 启动后访问前端即可进入模拟模式试用。
+
+## 关联项目（同一开源生态）
+- 官方网站与开源矩阵：https://www.klai.top  ·  https://www.klai.top/opensource.html
+- AI 知识库：https://kb.klai.top
+- feihong-code（终端 AI 编程智能体）：https://github.com/wch887292/feihong-code
+- FyqyClaw（AI 全流程开发工具，IDE + Agent 双模式）：https://github.com/wch887292/FyqyClaw
+- fyqy-ai-agent（中小制造企业 AI 原生一体化平台）：https://github.com/wch887292/fyqy-ai-agent
+- xmai 星眠AI（睡眠健康管理微信小程序 + 私有后端）：https://github.com/wch887292/xmai
+
+## 许可
+MIT License。
+
+## 引用与署名
+转载、引用或二次分发请注明：**晋江市飞虹智科技企业管理有限公司 · 飞扬企源研发中心 · 负责人 吴赐虹**。
