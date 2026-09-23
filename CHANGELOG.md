@@ -26,6 +26,7 @@
 ### 安全与维护（Security & Maintenance）
 - **公开仓库脱敏复核**：确认 `.env` / 构建产物从未进入 git 历史；JWT_SECRET / 数据库密码 / AI Key 均走环境变量或 `.env`（已 `.gitignore`），无硬编码泄漏；仓库内无私人手机号/邮箱/IP。补强 `SECURITY.md`（新增「修改默认演示账号」提醒、修正漏洞报送联系方式）、`init.sql`（标注 `admin/admin123` 为公开演示凭据，生产务必修改）。
 - **删除冗余**：移除与根目录新版重复的旧版 `geo-saa-backend/docker/docker-compose.yml`（硬编码 root、无 backend/frontend、无人引用）；README 文档导航补入漏引的 `docs/RETROSPECTIVE_20260813.md`。
+- **依赖安全修复**：前端 `nanoid` 修复至 `3.3.19`（`npm audit` 高危 GHSA-2v37-7h3g-55p8，size=0 时自定义生成器无限循环）；后端内嵌 Tomcat 覆盖升级至 `11.0.25`（`<tomcat.version>`，修复 **Critical 级 CVE-2026-65182** 权限/授权绕过、CVE-2026-65905 DIGEST 认证重放绕过、CVE-2026-68569）。复核 Spring Framework 7.0.9 / hutool 5.8.47 / jjwt 0.13.0 均无未修复公开漏洞；`mvn package` 验证通过，后端构建产物已用新 Tomcat。
 
 ## [v2.0.0] — 2026-08
 
