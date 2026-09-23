@@ -76,8 +76,8 @@ GEO-SaaS 采用**前后端分离**架构：
 
 ```
 geo-saa/
-├── start.ps1 / deploy.ps1      # 本地 / Docker 启动脚本
-├── docker-compose.yml          # 编排 mysql/redis/backend/frontend
+├── start.ps1 / deploy.ps1 / deploy.sh   # Docker 启动 / 部署脚本
+├── docker-compose.yml          # 编排 mysql/redis/rabbitmq/backend/frontend
 ├── geo-saa-backend/
 │   ├── pom.xml
 │   └── src/main/
@@ -101,4 +101,4 @@ geo-saa/
                      └──▶ /api ──▶ backend(:8080) ──▶ MySQL / Redis
 ```
 
-详见 [README](README.md) 的「Docker 部署」章节。
+详见 [README](README.md) 的「快速开始（Docker 一键部署）」章节。

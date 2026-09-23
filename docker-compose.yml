@@ -61,6 +61,12 @@ services:
     build:
       context: ./geo-saa-backend
       dockerfile: docker/Dockerfile
+      args:
+        HTTP_PROXY: ${BUILD_PROXY:-}
+        HTTPS_PROXY: ${BUILD_PROXY:-}
+        http_proxy: ${BUILD_PROXY:-}
+        https_proxy: ${BUILD_PROXY:-}
+        NO_PROXY: localhost,127.0.0.1
     container_name: geo-saa-backend
     environment:
       SPRING_PROFILES_ACTIVE: prod
@@ -93,6 +99,12 @@ services:
     build:
       context: ./geo-saa-frontend
       dockerfile: Dockerfile
+      args:
+        HTTP_PROXY: ${BUILD_PROXY:-}
+        HTTPS_PROXY: ${BUILD_PROXY:-}
+        http_proxy: ${BUILD_PROXY:-}
+        https_proxy: ${BUILD_PROXY:-}
+        NO_PROXY: localhost,127.0.0.1
     container_name: geo-saa-frontend
     ports:
       - "80:80"

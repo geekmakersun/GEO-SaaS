@@ -44,12 +44,11 @@ export default defineConfig(({ mode }) => {
           manualChunks(id) {
             if (!id.includes('node_modules')) return
             if (id.includes('echarts') || id.includes('zrender')) return 'vendor-echarts'
-            // element-plus 故意不归入手动分包：ElementPlusResolver 走 `element-plus/es`
-            // 全量 barrel 重新导出，若强制塞进单一 vendor-element 分包，Rollup 会为
-            // 保留跨分包重导出而保留所有组件（无法摇树，chunk 恒为 ~809KB）。
-            // 交给 Rollup 默认分包后，可真正按需摇树，未用组件（calendar/watermark/
-            // carousel/color-picker 等）不会进包，并按组件粒度缓存。
-            if (id.includes('element-plus') || id.includes('@element-plus')) return
+            // element-plus 归入手动分包 vendor-element：
+            // vite 8(rolldown) 下，若交由默认分包会拆出 css-*.js 交叉引用 chunk，
+            // 导致 ElMessage 等按需组件运行时出现 "N is not a function"。
+            // 手动归入单一分包可保证 Element Plus 内部共享模块不跨 chunk，功能稳定。
+            if (id.includes('element-plus') || id.includes('@element-plus')) return 'vendor-element'
             if (id.includes('vue-router') || id.includes('pinia') || /node_modules[\\/]@?vue/.test(id)) {
               return 'vendor-vue'
             }

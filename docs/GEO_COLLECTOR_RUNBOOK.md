@@ -29,13 +29,18 @@ GEO_PERPLEXITY_MODEL=sonar
 
 ## 三、重启后端（读取新环境变量）
 
+Docker 部署下，将采集相关配置写入项目根目录 `.env` 后，重启后端容器即可生效：
+
 ```bash
-# Git Bash / PowerShell（二选一，PowerShell 更稳）
-$env:MAVEN_HOME="C:\ProgramData\chocolatey\lib\maven\apache-maven-3.9.16"
-$env:SPRING_PROFILES_ACTIVE="dev"
-cd geo-saa-backend
-& "$env:MAVEN_HOME/bin/mvn.cmd" spring-boot:run
+# 1) 编辑 .env，写入 GEO_COLLECTOR_ENABLED=true、GEO_PERPERTIV_API_KEY 等
+# 2) 重启后端容器（读取新环境变量）
+docker compose restart backend
+#   或整体重建
+docker compose up -d --build backend
 ```
+
+> 后端通过 `application.yml` 的 `spring.config.import: optional:file:../.env` 读取 `.env`；
+> Docker 部署时该文件已挂载进后端容器，修改后重启即生效。
 
 ## 四、手动触发一次采集
 

@@ -18,6 +18,10 @@
 - **共享 ObjectMapper**：`OpenAiAdapter` 改为注入 `JacksonConfig` 提供的共享 Jackson 2 `ObjectMapper`，不再各自 `new` 独立实例。
 - **清理 Spring Boot 4 死配置**：移除 Boot 3.2 起已不生效的 `spring.mvc.throw-exception-if-no-handler-found`（404 由 `GlobalExceptionHandler` 统一处理）。
 
+### 变更（Changed）
+- **启动/部署方式统一为 Docker 方案**（跨系统可用）：`start.ps1` 由「本地 JDK+Node+MySQL」一键启动改为 **Docker Compose 一键启动**（`docker compose up -d --build`）；`deploy.ps1` / `deploy.sh` 对齐为纯 Docker 部署（含 `.env` 处理、后端 JAR 检测、统一 `docker compose`，移除过时镜像 tag）；README / README_EN / FAQ_EN / CONTRIBUTING / docs 系列文档的「本地开发」章节统一为「Docker 一键部署」，本地热更新仅保留为可选开发模式。现在跨机器一致，无需宿主机安装 JDK / Node / MySQL / Redis / Maven。
+- **前端生产构建修复（vite 8 / rolldown）**：Element Plus 按需组件被默认分包拆出交叉 chunk，导致生产包 `ElMessage` 运行时 `Uncaught TypeError: N is not a function`；`vite.config.js` 将 element-plus 强制归入独立分包 `vendor-element` 修复，生产包体约 545KB（dev 模式本就正常，此问题仅影响生产构建）。
+
 ## [v2.0.0] — 2026-08
 
 首个正式稳定版（Stable）。在 v1.0.0-beta 基础上完成安全加固、版本统一与文档规范化。

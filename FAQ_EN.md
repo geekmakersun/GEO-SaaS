@@ -34,24 +34,36 @@ MIT License.
 
 ## Quick Start
 
-### Q: What are the prerequisites for local dev?
+### Q: What are the prerequisites?
 
-- JDK 17
-- Node.js 18+
-- MySQL 8.0 (running, port 3306)
-- Redis 7 (running, port 6379)
-- Maven 3.9 (scripts can handle it)
+- Docker Desktop (Windows/macOS) or Docker Engine 24+ (Linux)
+- Docker Compose 2+
+- No need to install JDK / Node / MySQL / Redis / Maven on the host
 
-### Q: What's the fastest way to start locally?
+### Q: What's the fastest way to start?
 
-Run `.\start.ps1` at the project root. It checks the environment, builds the backend JAR, starts it on port 8080, installs frontend deps, starts Vite on port 3000, and opens the browser.
+Run `.\start.ps1` (Windows) or `./deploy.sh` (Linux/macOS), or directly:
 
-### Q: How do I start manually?
+```bash
+docker compose up -d --build
+```
 
-1. Init DB: `source geo-saa-backend/src/main/resources/db/init.sql` (creates `geo_saa`).
-2. Backend: `cd geo-saa-backend && mvn clean package -DskipTests && java -jar target/geo-saa-backend.jar --spring.profiles.active=dev`.
-3. Frontend: `cd geo-saa-frontend && npm install && npx vite --host`.
-4. Open http://localhost:3000; default admin `admin / admin123`.
+This brings up `mysql` / `redis` / `rabbitmq` / `backend`(8080) / `frontend`(80) at once and runs the DB init automatically. Frontend at http://localhost, backend at http://localhost:8080, default admin `admin / admin123`.
+
+### Q: How do I configure `.env`?
+
+Before the first deploy: `cp .env.example .env`, then set `JWT_SECRET` (e.g. `openssl rand -base64 32`), `MYSQL_PASSWORD`, `CORS_ALLOWED_ORIGINS`. The backend fails fast if `JWT_SECRET` is missing under the `prod` profile.
+
+### Q: How do I do local hot-reload dev (optional)?
+
+Keep deps & backend in Docker and run the frontend via Vite:
+
+```bash
+docker compose up -d mysql redis rabbitmq backend
+cd geo-saa-frontend && npm install && npm run dev
+```
+
+Open http://localhost:3000; Vite proxies `/api` to the backend on 8080.
 
 ---
 
@@ -110,19 +122,24 @@ Search ranking, traffic analysis, and brand-volume trends.
 
 ### Q: Port 8080 already in use?
 
-`start.ps1` auto-frees it, or manually:
+Under Docker, first ensure the host port is free, or adjust the mapping in `docker-compose.yml`:
 ```powershell
 netstat -ano | findstr ":8080 "
 Stop-Process -Id <PID> -Force
 ```
 
-### Q: Database connection failed?
+### Q: Database connection failed / backend won't start?
 
-Ensure MySQL is running with credentials `root/root`, or edit `application-dev.yml`.
+Check container status and logs; ensure dependent services are healthy first:
+```bash
+docker compose ps
+docker compose logs -f backend
+```
+Default DB credentials are `root/root`; change them via `MYSQL_PASSWORD` in `.env`.
 
 ### Q: Frontend can't reach the backend API?
 
-Check Vite proxy config `vite.config.js`; ensure `target` points to the correct backend address.
+Under Docker both are on the same Compose network; the frontend proxies `/api` to the backend via Nginx. If you change ports, update `docker-compose.yml` and `nginx/default.conf` accordingly.
 
 ### Q: What are the default DB credentials in dev?
 

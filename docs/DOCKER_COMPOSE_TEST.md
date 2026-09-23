@@ -1,8 +1,8 @@
 # Docker Compose 实测指南（O8）
 
-> 状态：**待环境验证** —— 本机沙箱无 Docker 守护进程（`docker: command not found`），
-> 以下步骤基于 `docker-compose.yml` 静态检查结论编写，需在装有 Docker 24+ / Docker Compose 2+ 的机器上执行。
-> 检查已确认：编排结构、环境变量注入、`init.sql` 自动初始化（含新增 `asset_record` 表）均无缺失。
+> 状态：**已验证**（2026-09 实测）—— Docker Desktop 4.91 / Compose v2 下
+> `docker compose up -d --build` 成功，`mysql/redis/rabbitmq` healthy、`backend/frontend` running；
+> `admin/admin123` 登录返回 code 200，前端 `http://localhost` 正常访问。
 
 ## 一、前置条件
 
@@ -67,7 +67,7 @@ docker compose logs backend | grep "GEO 定时采集"   # 期望出现采集完�
 | 后端 prod 档案环境变量 | ✅ `MYSQL_HOST/USER/PASSWORD`、`REDIS_HOST`、`JWT_SECRET`（fail-fast）、`CORS_ALLOWED_ORIGINS` 齐全 |
 | RabbitMQ 联动 | ✅ compose 提供 rabbitmq 服务；prod 未排除 MQ 自动配置，可正常连接 |
 | 采集器配置 | ✅ 默认关闭（`app.geo.collector.enabled=false`），未配 key 时后端照常启动，不影响既有接口 |
-| 前端镜像 | ✅ `frontend/Dockerfile` 已使用 `npm ci`（配合已提交的 `package-lock.json`，可复现构建） |
+| 前端镜像 | ✅ 当前为宿主构建 `dist` 后 `COPY` 进 nginx 镜像；网络恢复后可换回 Dockerfile 内 node 多阶段构建（`npm ci` 配合 `package-lock.json` 可复现） |
 
 ## 五、注意事项
 

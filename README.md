@@ -61,111 +61,97 @@
 | 前端 | Vue 3 + Vite + Element Plus + ECharts + Pinia |
 | 后端 | Spring Boot 3.2 + Spring Security + MyBatis-Plus |
 | 数据库 | MySQL 8.0 + Redis 7 |
-| 构建 | Maven 3.9 + npm |
-| 运行环境 | JDK 17 + Node.js 18+ |
+| 构建 | Maven 3.9 + npm（容器内完成） |
+| 运行环境 | Docker（容器内 JDK 17 + Node.js 22） |
 
-## 快速开始（本地开发）
+## 快速开始（Docker 一键部署）
+
+> 本项目统一以 **Docker Compose** 作为标准启动/部署方式，无需在宿主机安装 JDK / Node / MySQL / Redis / Maven。
 
 ### 前置条件
 
-- JDK 17（推荐 Microsoft Build of OpenJDK）
-- Node.js 18+
-- MySQL 8.0（运行中，端口 3306）
-- Redis 7（运行中，端口 6379）
-- Maven 3.9（可选，脚本会自动处理）
+- Docker Desktop（Windows/macOS）或 Docker Engine 24+（Linux）
+- Docker Compose 2+
 
 ### 一键启动
 
-在项目根目录执行 PowerShell 脚本：
-
-```powershell
-.\start.ps1
-```
-
-脚本会自动完成以下步骤：
-1. 检查 JDK 17、Node.js、MySQL、Redis 环境
-2. 构建后端 JAR 包
-3. 启动后端服务（端口 8080）
-4. 安装前端 npm 依赖
-5. 启动前端开发服务器（端口 3000）
-6. 打开浏览器
-
-### 手动启动
-
-#### 1. 初始化数据库
-
-确保 MySQL 已运行，执行初始化脚本：
-
-```sql
-source geo-saa-backend/src/main/resources/db/init.sql
-```
-
-默认会创建 `geo_saa` 数据库并初始化表结构和默认数据。
-
-#### 2. 启动后端
-
-```powershell
-# 构建
-cd geo-saa-backend
-mvn clean package -DskipTests
-
-# 启动
-java -jar target/geo-saa-backend.jar --spring.profiles.active=dev
-```
-
-后端将在 `http://localhost:8080` 启动。
-
-#### 3. 启动前端
-
-```powershell
-cd geo-saa-frontend
-npm install
-npx vite --host
-```
-
-前端将在 `http://localhost:3000` 启动，Vite 自动将 `/api` 请求代理到后端。
-
-### 访问系统
-
-- 前端地址: `http://localhost:3000`
-- 后端地址: `http://localhost:8080`
-- 默认管理员: `admin` / `admin123`
-
-## Docker 部署
-
-### 前置条件
-
-- Docker 24+
-- Docker Compose 2+
-
-### 启动
-
-```powershell
-.\deploy.ps1
-```
-
-或手动执行：
+在项目根目录执行：
 
 ```bash
 docker compose up -d --build
 ```
 
-### 访问
+或使用部署脚本：
+
+```powershell
+.\deploy.ps1     # Windows
+./deploy.sh      # Linux/macOS
+```
+
+`docker compose up` 会一次性拉起全套服务：`mysql`、`redis`、`rabbitmq`、`backend`(8080)、`frontend`(80)，并自动执行数据库初始化脚本。
+
+### 配置 `.env`
+
+首次部署前，从模板创建并填写环境变量：
+
+```bash
+cp .env.example .env
+```
+
+关键变量：
+
+| 变量 | 默认值 | 说明 |
+|------|--------|------|
+| `JWT_SECRET` | 无（必填） | JWT 签名密钥，用 `openssl rand -base64 32` 生成 |
+| `MYSQL_PASSWORD` | `root` | MySQL root 密码（与 backend 一致） |
+| `CORS_ALLOWED_ORIGINS` | `http://localhost` | 允许跨域访问的前端域名 |
+| `BUILD_PROXY` | 空 | 可选：构建期代理，仅容器出网受限时使用 |
+
+> 后端在 `prod` profile 下，缺失 `JWT_SECRET` 会故意 fail-fast 拒绝启动（安全设计）。
+
+### 访问系统
 
 | 服务 | 地址 |
 |------|------|
 | 前端 | `http://localhost` |
 | 后端 API | `http://localhost:8080` |
-| RabbitMQ 管理 | `http://localhost:15672` (guest/guest) |
+| RabbitMQ 管理 | `http://localhost:15672`（guest/guest） |
 | 默认管理员 | `admin` / `admin123` |
+
+### 常用命令
+
+```bash
+docker compose ps               # 查看服务状态
+docker compose logs -f backend  # 跟踪后端日志
+docker compose down             # 停止并移除容器（保留数据卷）
+docker compose down -v          # 停止并清空数据卷（重置环境）
+```
+
+### 本地开发模式（可选）
+
+需要前后端热更新开发时，可只把依赖与后端放在 Docker，前端用 Vite dev：
+
+```bash
+# 1) 仅启动依赖 + 后端
+docker compose up -d mysql redis rabbitmq backend
+
+# 2) 前端开发服务器（端口 3000，/api 自动代理到 8080）
+cd geo-saa-frontend
+npm install
+npm run dev
+```
+
+前端改动即时热更新，后端 API 由 Docker 提供。
 
 ## 项目结构
 
 ```
 geo-saa/
-├── start.ps1                  # 一键启动脚本（本地开发）
-├── deploy.ps1                 # Docker 部署脚本
-├── docker-compose.yml         # Docker Compose 编排
+├── start.ps1                  # Docker 一键启动脚本
+├── deploy.ps1                 # Docker 部署脚本（Windows）
+├── deploy.sh                  # Docker 部署脚本（Linux/macOS）
+├── docker-compose.yml         # Docker Compose 编排（标准启动方式）
+├── .env.example               # 环境变量模板（复制为 .env）
 ├── geo-saa-backend/           # 后端服务
 │   ├── pom.xml
 │   ├── docker/
@@ -279,20 +265,25 @@ ai:
 ## 常见问题
 
 ### Q: 启动报错 "端口 8080 已被占用"
-A: 使用脚本 `start.ps1` 会自动释放端口，或手动执行：
+A: Docker 环境下先确认宿主机端口未被占用，或调整 `docker-compose.yml` 的端口映射：
 ```powershell
 netstat -ano | findstr ":8080 "
 Stop-Process -Id <PID> -Force
 ```
 
-### Q: 数据库连接失败
-A: 确保 MySQL 已启动，凭据为 `root/root`，或修改 `application-dev.yml` 中的配置。
+### Q: 数据库连接失败 / 后端起不来
+A: 检查容器状态与日志，确保依赖服务 healthy 后再起 backend：
+```bash
+docker compose ps
+docker compose logs -f backend
+```
+数据库凭据默认 `root/root`，可在 `.env` 中通过 `MYSQL_PASSWORD` 统一修改。
 
 ### Q: 前端无法访问后端 API
-A: 检查 Vite 代理配置 `vite.config.js`，确保 `target` 指向正确的后端地址。
+A: Docker 部署下前后端在同一 Compose 网络，前端已通过 Nginx 反向代理 `/api` 到后端；若改动端口，需同步调整 `docker-compose.yml` 与 `nginx/default.conf`。
 
 ### Q: 不需要 RabbitMQ
-A: 开发模式下 RabbitMQ 已禁用（`application-dev.yml` 中配置），不影响正常使用。
+A: 后端 `dev` profile 已禁用 RabbitMQ；`docker-compose.yml` 中该服务是可选编排，不启动它不影响核心功能。
 
 
 ---

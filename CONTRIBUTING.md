@@ -35,9 +35,9 @@ cd ../geo-saa-frontend
 npm install
 npm run build
 
-# 4. 本地一键启动（需 MySQL 8 + Redis 7）
+# 4. Docker 一键启动（推荐，无需本地安装 MySQL/Redis/JDK/Node）
 cd ..
-.\start.ps1
+.\start.ps1       # Windows；Linux/macOS 用 ./deploy.sh
 ```
 
 > 不希望配置真实 AI Key？将 `AI_SIMULATION_ENABLED=true` 即可使用内置模拟数据体验全部功能。

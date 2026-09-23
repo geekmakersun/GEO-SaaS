@@ -56,91 +56,53 @@ Maintained by **Jinjiang Feihongzhi Technology Enterprise Management Co., Ltd. �
 | Frontend | Vue 3 + Vite + Element Plus + ECharts + Pinia |
 | Backend | Spring Boot 3.2 + Spring Security + MyBatis-Plus |
 | Database | MySQL 8.0 + Redis 7 |
-| Build | Maven 3.9 + npm |
-| Runtime | JDK 17 + Node.js 18+ |
+| Build | Maven 3.9 + npm (in containers) |
+| Runtime | Docker (JDK 17 + Node.js 22 inside containers) |
 
-## Quick Start (Local Dev)
+## Quick Start (Docker)
+
+> This project standardizes on **Docker Compose** for startup/deployment. No need to install JDK / Node / MySQL / Redis / Maven on the host.
 
 ### Prerequisites
 
-- JDK 17 (Microsoft Build of OpenJDK recommended)
-- Node.js 18+
-- MySQL 8.0 (running, port 3306)
-- Redis 7 (running, port 6379)
-- Maven 3.9 (optional; scripts handle it)
+- Docker Desktop (Windows/macOS) or Docker Engine 24+ (Linux)
+- Docker Compose 2+
 
 ### One-click start
 
-Run the PowerShell script at the project root:
-
-```powershell
-.\start.ps1
-```
-
-The script automatically:
-1. Checks JDK 17, Node.js, MySQL, Redis
-2. Builds the backend JAR
-3. Starts the backend (port 8080)
-4. Installs frontend npm deps
-5. Starts the frontend dev server (port 3000)
-6. Opens the browser
-
-### Manual start
-
-#### 1. Initialize database
-
-Ensure MySQL is running, then execute the init script:
-
-```sql
-source geo-saa-backend/src/main/resources/db/init.sql
-```
-
-This creates the `geo_saa` database and initializes schema and default data.
-
-#### 2. Start backend
-
-```powershell
-cd geo-saa-backend
-mvn clean package -DskipTests
-java -jar target/geo-saa-backend.jar --spring.profiles.active=dev
-```
-
-Backend starts at `http://localhost:8080`.
-
-#### 3. Start frontend
-
-```powershell
-cd geo-saa-frontend
-npm install
-npx vite --host
-```
-
-Frontend starts at `http://localhost:3000`; Vite proxies `/api` to the backend.
-
-### Access
-
-- Frontend: `http://localhost:3000`
-- Backend: `http://localhost:8080`
-- Default admin: `admin` / `admin123`
-
-## Docker Deployment
-
-### Prerequisites
-
-- Docker 24+
-- Docker Compose 2+
-
-### Start
-
-```powershell
-.\deploy.ps1
-```
-
-Or manually:
+Run at the project root:
 
 ```bash
 docker compose up -d --build
 ```
+
+Or use the deploy scripts:
+
+```powershell
+.\deploy.ps1     # Windows
+./deploy.sh      # Linux/macOS
+```
+
+`docker compose up` brings up the full stack at once: `mysql`, `redis`, `rabbitmq`, `backend`(8080), `frontend`(80), and runs the database init script automatically.
+
+### Configure `.env`
+
+Before first deploy, create the env file from the template:
+
+```bash
+cp .env.example .env
+```
+
+Key variables:
+
+| Variable | Default | Description |
+|------|--------|------|
+| `JWT_SECRET` | none (required) | JWT signing secret; generate with `openssl rand -base64 32` |
+| `MYSQL_PASSWORD` | `root` | MySQL root password (must match backend) |
+| `CORS_ALLOWED_ORIGINS` | `http://localhost` | Allowed frontend origins |
+| `BUILD_PROXY` | empty | Optional build-time proxy (only if container egress is restricted) |
+
+> Under the `prod` profile, the backend deliberately fails fast if `JWT_SECRET` is missing (fail-safe design).
 
 ### Access
 
@@ -151,13 +113,40 @@ docker compose up -d --build
 | RabbitMQ management | `http://localhost:15672` (guest/guest) |
 | Default admin | `admin` / `admin123` |
 
+### Common commands
+
+```bash
+docker compose ps               # service status
+docker compose logs -f backend  # follow backend logs
+docker compose down             # stop & remove containers (keep volumes)
+docker compose down -v          # stop & wipe volumes (reset environment)
+```
+
+### Local dev mode (optional)
+
+For hot-reload development, keep deps and backend in Docker and run the frontend via Vite:
+
+```bash
+# 1) Start deps + backend only
+docker compose up -d mysql redis rabbitmq backend
+
+# 2) Frontend dev server (port 3000, /api proxies to 8080)
+cd geo-saa-frontend
+npm install
+npm run dev
+```
+
+Frontend changes hot-reload while the backend API is provided by Docker.
+
 ## Project Structure
 
 ```
 geo-saa/
-├── start.ps1                  # one-click start (local dev)
-├── deploy.ps1                 # Docker deploy script
-├── docker-compose.yml         # Docker Compose orchestration
+├── start.ps1                  # Docker one-click start script
+├── deploy.ps1                 # Docker deploy script (Windows)
+├── deploy.sh                  # Docker deploy script (Linux/macOS)
+├── docker-compose.yml         # Docker Compose orchestration (standard start)
+├── .env.example               # env template (copy to .env)
 ├── geo-saa-backend/           # backend service
 │   ├── pom.xml
 │   ├── docker/Dockerfile
@@ -265,20 +254,25 @@ ai:
 ## FAQ
 
 ### Q: Startup error "port 8080 already in use"
-A: The `start.ps1` script auto-frees the port, or manually:
+A: Under Docker, first ensure the host port is free, or adjust the port mapping in `docker-compose.yml`:
 ```powershell
 netstat -ano | findstr ":8080 "
 Stop-Process -Id <PID> -Force
 ```
 
-### Q: Database connection failed
-A: Ensure MySQL is running, credentials `root/root`, or edit `application-dev.yml`.
+### Q: Database connection failed / backend won't start
+A: Check container status and logs; ensure dependent services are healthy before backend:
+```bash
+docker compose ps
+docker compose logs -f backend
+```
+Default DB credentials are `root/root`; change them via `MYSQL_PASSWORD` in `.env`.
 
 ### Q: Frontend can't reach backend API
-A: Check Vite proxy config `vite.config.js`; ensure `target` points to the correct backend.
+A: Under Docker both are on the same Compose network and the frontend proxies `/api` to the backend via Nginx; if you change ports, update `docker-compose.yml` and `nginx/default.conf` accordingly.
 
 ### Q: Don't need RabbitMQ?
-A: In dev mode RabbitMQ is disabled (`application-dev.yml`), no impact on normal use.
+A: The `dev` profile disables RabbitMQ; in `docker-compose.yml` that service is optional and not required for core features.
 
 ---
 
