@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 import json, os, urllib.request, urllib.parse, urllib.error
 
-# 默认打前端 dev server（:3000，由 Vite 代理 /api -> 后端 :8080）。
-# CI 中设置 SMOKE_BASE=http://127.0.0.1:8080 可直连后端，免去启动前端。
-BASE = os.environ.get("SMOKE_BASE", "http://localhost:3000")
+# 默认打 Docker 部署的后端（:8080 直连）。本地前端 dev 时可改指 :3000（由 Vite 代理 /api -> 后端）。
+# 始终可用 SMOKE_BASE 覆盖，例如：SMOKE_BASE=http://localhost:3000 python smoke_test.py
+BASE = os.environ.get("SMOKE_BASE", "http://localhost:8080")
 
 def req(method, path, params=None, token=None, body=None, raw=False):
     url = BASE + path

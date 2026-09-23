@@ -6,7 +6,10 @@ const TOKEN_KEY = 'geo-saa-token'
 const REFRESH_TOKEN_KEY = 'geo-saa-refresh-token'
 
 const request = axios.create({
-  baseURL: '/api/v1',
+  // 默认同域（'/api/v1'，由 Nginx / Vite 反向代理到后端）。
+  // 若要前后端解耦跨域部署，构建前端时注入 VITE_API_BASE 指向后端真实地址即可：
+  //   VITE_API_BASE=https://api.example.com npm run build
+  baseURL: import.meta.env.VITE_API_BASE || '/api/v1',
   timeout: 30000
 })
 

@@ -143,6 +143,21 @@ npm run dev
 
 前端改动即时热更新，后端 API 由 Docker 提供。
 
+### 前后端解耦部署（可选）
+
+项目默认是**同域部署**：Nginx 把 `/api` 反向代理到后端，前端无需关心后端地址。若想彻底解耦（前端独立静态托管、后端独立服务器/域名），只需两处配置：
+
+1. **前端构建时注入后端地址**（跨域直连，绕过 Nginx 反代）：
+   ```bash
+   VITE_API_BASE=http://<后端域名或IP>:8080 npm run build
+   ```
+2. **后端放行前端域名**（`.env` 里配置，逗号分隔）：
+   ```env
+   CORS_ALLOWED_ORIGINS=http://localhost,http://<前端域名>
+   ```
+
+> 解耦后前端是纯静态资源，可部署到任意静态托管（Nginx / CDN / 对象存储），与后端完全无关；后端仅依赖 MySQL / Redis / RabbitMQ。
+
 ## 项目结构
 
 ```

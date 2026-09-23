@@ -138,6 +138,21 @@ npm run dev
 
 Frontend changes hot-reload while the backend API is provided by Docker.
 
+### Decoupled frontend/backend deploy (optional)
+
+The default setup is **same-origin**: Nginx reverse-proxies `/api` to the backend, so the frontend never needs to know the backend address. To fully decouple (frontend on any static host, backend on its own server/domain), only two configs:
+
+1. **Inject the backend address at frontend build time** (cross-origin direct call, bypassing the Nginx proxy):
+   ```bash
+   VITE_API_BASE=http://<backend-domain-or-ip>:8080 npm run build
+   ```
+2. **Allow the frontend origin in the backend** (`.env`, comma-separated):
+   ```env
+   CORS_ALLOWED_ORIGINS=http://localhost,http://<frontend-domain>
+   ```
+
+> Decoupled, the frontend is pure static assets and can live on any static host (Nginx / CDN / object storage), fully independent of the backend; the backend only depends on MySQL / Redis / RabbitMQ.
+
 ## Project Structure
 
 ```
