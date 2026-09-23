@@ -15,6 +15,8 @@
 # COPY --from=build /app/dist /usr/share/nginx/html
 # =====================================================
 FROM nginx:alpine
+# 升级 alpine 系统包到最新（修复基础镜像自带系统包的 CVE，如 openssl/libcrypto 等；--no-cache 不保留索引缓存）
+RUN apk upgrade --no-cache
 COPY dist /usr/share/nginx/html
 COPY nginx/default.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
