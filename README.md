@@ -1,5 +1,3 @@
-> **English / 英文文档**：[README_EN.md](README_EN.md) · [FAQ (English)](FAQ_EN.md)
-
 # GEO-SaaS 全域AI搜索优化平台
 
 <div align="center">
