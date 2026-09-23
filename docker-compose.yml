@@ -114,6 +114,25 @@ services:
       - geo-saa-net
     restart: unless-stopped
 
+  # phpMyAdmin：可视化管理 MySQL（开发/调试用）
+  # 访问 http://localhost:8081，登录用 root + .env 的 MYSQL_PASSWORD（默认 root/root）
+  # 密码不在环境变量预填（避免入库敏感信息），登录表单手动输入。
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: geo-saa-phpmyadmin
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      UPLOAD_LIMIT: 128M
+    ports:
+      - "8081:80"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - geo-saa-net
+    restart: unless-stopped
+
 volumes:
   mysql-data:
   redis-data:

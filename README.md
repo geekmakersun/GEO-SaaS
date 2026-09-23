@@ -89,7 +89,7 @@ docker compose up -d --build
 ./deploy.sh      # Linux/macOS
 ```
 
-`docker compose up` 会一次性拉起全套服务：`mysql`、`redis`、`rabbitmq`、`backend`(8080)、`frontend`(80)，并自动执行数据库初始化脚本。
+`docker compose up` 会一次性拉起全套服务：`mysql`、`redis`、`rabbitmq`、`backend`(8080)、`frontend`(80)、`phpmyadmin`(8081)，并自动执行数据库初始化脚本。
 
 ### 配置 `.env`
 
@@ -117,6 +117,7 @@ cp .env.example .env
 | 前端 | `http://localhost` |
 | 后端 API | `http://localhost:8080` |
 | RabbitMQ 管理 | `http://localhost:15672`（guest/guest） |
+| phpMyAdmin（MySQL 可视化） | `http://localhost:8081`（root / `.env` 的 `MYSQL_PASSWORD`，默认 `root/root`） |
 | 默认管理员 | `admin` / `admin123` |
 
 ### 常用命令
