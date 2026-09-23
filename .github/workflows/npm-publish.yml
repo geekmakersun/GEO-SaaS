@@ -1,4 +1,4 @@
-name: Publish npm
+﻿name: 发布 npm 包
 
 # 打 tag v*（如 v2.0.0）时自动发布 @wch-klzx/geo-engine 到 npm
 on:
@@ -11,24 +11,24 @@ permissions:
 
 jobs:
   publish:
-    name: Publish @wch-klzx/geo-engine
+    name: 发布 @wch-klzx/geo-engine
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
 
-      - name: Set up Node.js
+      - name: 设置 Node.js
         uses: actions/setup-node@v7
         with:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org/'
 
-      - name: Install & test
+      - name: 安装并测试
         working-directory: geo-engine
         run: |
           npm install --no-audit --no-fund
           npm test
 
-      - name: Publish to npm
+      - name: 发布到 npm
         working-directory: geo-engine
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
