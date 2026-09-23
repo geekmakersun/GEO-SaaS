@@ -1,4 +1,4 @@
-# GEO-SaaS 全域AI搜索优化平台
+﻿# GEO-SaaS 全域AI搜索优化平台
 
 <div align="center">
 
@@ -38,20 +38,20 @@
 
 | 文档 | 说明 |
 |------|------|
-| [架构说明](docs/ARCHITECTURE.md) | 系统架构、模块划分与数据流 |
-| [开发路线图](docs/ROADMAP.md) | 未来规划与社区计划 |
-| [GEO/AAO 开发指南](docs/GEO_AAO_DEV_GUIDE.md) | 三代搜索优化（SEO/AEO/GEO/AAO）战略与产品映射 |
-| [复盘优化报告](docs/RETROSPECTIVE_OPTIMIZATION.md) | 体检发现与工程化优化记录 |
-| [全面复盘(2026-08-13)](docs/RETROSPECTIVE_20260813.md) | 全仓体检、文档时效与依赖健康检查报告 |
-| [Docker 实测指南](docs/DOCKER_COMPOSE_TEST.md) | Compose 一键部署验证清单 |
-| [依赖升级评估](docs/DEPENDENCY_ASSESSMENT.md) | 前端大版本升级风险与验收标准 |
-| [GEO 采集器试采手册](docs/GEO_COLLECTOR_RUNBOOK.md) | 配真实 Key 后 3 分钟完成首次试采 |
-| [npm 发布手册](docs/NPM_PUBLISH_GUIDE.md) | @feihong/geo-engine 发布流程与 token 配置 |
-| [API 文档](APIDOC.md) | 接口清单与字段说明 |
+| [架构说明](docs/系统架构.md) | 系统架构、模块划分与数据流 |
+| [开发路线图](docs/开发路线图.md) | 未来规划与社区计划 |
+| [GEO/AAO 开发指南](docs/GEO-AAO开发指南.md) | 三代搜索优化（SEO/AEO/GEO/AAO）战略与产品映射 |
+| [复盘优化报告](docs/复盘优化报告.md) | 体检发现与工程化优化记录 |
+| [全面复盘(2026-08-13)](docs/全面复盘2026-08-13.md) | 全仓体检、文档时效与依赖健康检查报告 |
+| [Docker 实测指南](docs/Docker部署实测.md) | Compose 一键部署验证清单 |
+| [依赖升级评估](docs/依赖升级评估.md) | 前端大版本升级风险与验收标准 |
+| [GEO 采集器试采手册](docs/GEO采集器试采手册.md) | 配真实 Key 后 3 分钟完成首次试采 |
+| [npm 发布手册](docs/npm发布手册.md) | @feihong/geo-engine 发布流程与 token 配置 |
+| [API 文档](API文档.md) | 接口清单与字段说明 |
 | [贡献指南](CONTRIBUTING.md) | 如何提 Issue / Pull Request |
 | [行为准则](CODE_OF_CONDUCT.md) | 社区行为公约 |
 | [安全策略](SECURITY.md) | 漏洞报送与安全配置提醒 |
-| [更新日志](CHANGELOG.md) | 版本变更记录 |
+| [更新日志](更新日志.md) | 版本变更记录 |
 
 ## 技术栈
 

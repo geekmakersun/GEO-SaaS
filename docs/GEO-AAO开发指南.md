@@ -1,9 +1,9 @@
-# GEO SaaS 平台 · 开发文档 v2（2026 规则引擎）
+﻿# GEO SaaS 平台 · 开发文档 v2（2026 规则引擎）
 
 > **文档定位**：geo-saa 平台如何把「三代搜索增长」理论工程化，并落地 **2026 最新 GEO/AAO 规则**。
 > 面向对象：产品 / 研发 / 运营。
 >
-> 关联文档：`README.md`、`docs/ARCHITECTURE.md`、`APIDOC.md`、`docs/NPM_PUBLISH_GUIDE.md`、`geo-engine/`（npm 包）
+> 关联文档：`README.md`、`docs/系统架构.md`、`API文档.md`、`docs/npm发布手册.md`、`geo-engine/`（npm 包）
 
 ---
 
