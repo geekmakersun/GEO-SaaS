@@ -14,7 +14,7 @@
 请通过以下私有渠道报送，以便我们在公开前完成修复：
 
 - 在仓库中创建 **私密安全公告（Security Advisory）**：`Security → Report a vulnerability`
-- 或发送邮件至维护团队（见 [README](README.md) 联系方式），标题注明 `[SECURITY]`
+- 或通过[官网](https://www.klai.top)联系维护团队，标题注明 `[SECURITY]`
 
 报送时请尽量包含：
 
@@ -38,6 +38,7 @@
 3. **`CORS_ALLOWED_ORIGINS` 禁止使用 `*`**，仅放行受信任的前端域名。
 4. 生产环境请关闭 `AI_SIMULATION_ENABLED`，并配置真实数据库强密码。
 5. 定期更新依赖；本仓库已适配 Dependabot 自动PR。
+6. **修改默认演示账号**：初始化脚本内置的 `admin/admin123` 为**公开的演示凭据**，仅用于本地体验。生产部署后请**第一时间修改该账号密码**（`系统管理 → 权限管理`），或删除该演示账号。
 
 ## 模拟模式说明
 

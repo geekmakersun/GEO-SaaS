@@ -21,6 +21,11 @@
 ### 变更（Changed）
 - **启动/部署方式统一为 Docker 方案**（跨系统可用）：`start.ps1` 由「本地 JDK+Node+MySQL」一键启动改为 **Docker Compose 一键启动**（`docker compose up -d --build`）；`deploy.ps1` / `deploy.sh` 对齐为纯 Docker 部署（含 `.env` 处理、后端 JAR 检测、统一 `docker compose`，移除过时镜像 tag）；README / README_EN / FAQ_EN / CONTRIBUTING / docs 系列文档的「本地开发」章节统一为「Docker 一键部署」，本地热更新仅保留为可选开发模式。现在跨机器一致，无需宿主机安装 JDK / Node / MySQL / Redis / Maven。
 - **前端生产构建修复（vite 8 / rolldown）**：Element Plus 按需组件被默认分包拆出交叉 chunk，导致生产包 `ElMessage` 运行时 `Uncaught TypeError: N is not a function`；`vite.config.js` 将 element-plus 强制归入独立分包 `vendor-element` 修复，生产包体约 545KB（dev 模式本就正常，此问题仅影响生产构建）。
+- **前后端解耦配置化**：前端 `request.js` baseURL 改为 `import.meta.env.VITE_API_BASE || '/api/v1'`（解耦部署时构建注入后端地址即可）；后端 `application.yml` CORS 默认值补 `http://localhost`；`smoke_test.py` 默认目标改为 `:8080`（Docker 后端直连）；`.env.example` 增加前端解耦构建变量段；README / README_EN 增加「前后端解耦部署（可选）」小节。
+
+### 安全与维护（Security & Maintenance）
+- **公开仓库脱敏复核**：确认 `.env` / 构建产物从未进入 git 历史；JWT_SECRET / 数据库密码 / AI Key 均走环境变量或 `.env`（已 `.gitignore`），无硬编码泄漏；仓库内无私人手机号/邮箱/IP。补强 `SECURITY.md`（新增「修改默认演示账号」提醒、修正漏洞报送联系方式）、`init.sql`（标注 `admin/admin123` 为公开演示凭据，生产务必修改）。
+- **删除冗余**：移除与根目录新版重复的旧版 `geo-saa-backend/docker/docker-compose.yml`（硬编码 root、无 backend/frontend、无人引用）；README 文档导航补入漏引的 `docs/RETROSPECTIVE_20260813.md`。
 
 ## [v2.0.0] — 2026-08
 

@@ -2,6 +2,7 @@
 -- Geo-SAA 数据库初始化脚本
 -- 数据库: geo_saa
 -- 字符集: utf8mb4
+-- 注意：下方 admin 账号（admin/admin123）为公开演示凭据，生产部署后务必第一时间修改密码。
 -- ============================================
 
 CREATE DATABASE IF NOT EXISTS geo_saa DEFAULT CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci;

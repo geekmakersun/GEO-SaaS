@@ -44,6 +44,7 @@
 | [开发路线图](docs/ROADMAP.md) | 未来规划与社区计划 |
 | [GEO/AAO 开发指南](docs/GEO_AAO_DEV_GUIDE.md) | 三代搜索优化（SEO/AEO/GEO/AAO）战略与产品映射 |
 | [复盘优化报告](docs/RETROSPECTIVE_OPTIMIZATION.md) | 体检发现与工程化优化记录 |
+| [全面复盘(2026-08-13)](docs/RETROSPECTIVE_20260813.md) | 全仓体检、文档时效与依赖健康检查报告 |
 | [Docker 实测指南](docs/DOCKER_COMPOSE_TEST.md) | Compose 一键部署验证清单 |
 | [依赖升级评估](docs/DEPENDENCY_ASSESSMENT.md) | 前端大版本升级风险与验收标准 |
 | [GEO 采集器试采手册](docs/GEO_COLLECTOR_RUNBOOK.md) | 配真实 Key 后 3 分钟完成首次试采 |
