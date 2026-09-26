@@ -1,77 +1,85 @@
-# Docker Compose 实测指南（O8）
+# Docker Compose 实测指南（容器内网部署 · Linux/1Panel）
 
-> 状态：**已验证**（2026-09 实测）—— Docker Desktop 4.91 / Compose v2 下
-> `docker compose up -d --build` 成功，`mysql/redis/rabbitmq` healthy、`backend/frontend` running；
-> `admin/admin123` 登录返回 code 200，前端 `http://localhost` 正常访问。
+> 状态：**已验证（2026-09）**—— WSL2 Debian12 + 1Panel 共存环境下，
+> `docker compose up -d --build` 全栈 6 容器健康，后端 Java 25 启动成功，
+> 前端 `http://127.0.0.1:8009` 返回 200，`admin/admin123` 登录可用。
 
-## 一、前置条件
+## 一、部署形态（重要）
 
-- Docker 24+、Docker Compose 2+
-- 项目根目录准备 `.env`（`JWT_SECRET` **必填**，缺失时后端 fail-fast 拒绝启动）：
+本项目容器**端口在容器内**（container-internal）：除前端外，mysql/redis/rabbitmq/backend/phpmyadmin
+均**不发布宿主端口**，容器间通过 `geo-saas-net` 自定义网络按**服务名**互访（backend 访问 `mysql:3306` / `redis:6379` / `rabbitmq:5672`）。
+
+- **唯一对外入口**：前端 Nginx/OpenResty 的 `80` 端口，映射为宿主 **`127.0.0.1:8009`**（回环）。
+- 宿主 `80` 端口已被 **1Panel 的 openresty（host 网络）** 占用，前端不直接绑 80；
+  对外访问通常经 1Panel Web 面板建站/反向代理指向 `http://127.0.0.1:8009`。
+- 后端接口不直接暴露宿主，前端 Nginx 把 `/api` 反代到容器内 `backend:8080`。
+
+## 二、前置条件
+
+- Docker Engine + Compose v2（本项目在 WSL2 Debian12、docker 29.x 实测）
+- 1Panel（可选共存；若不用 1Panel，可把前端端口改为 `8009:80` 或 `80:80`）
+- 项目根目录准备 `.env`（`JWT_SECRET` **必填**，缺失时后端 fail-fast 拒绝启动）。模板见 `.env.example`：
 
 ```env
-MYSQL_USER=root
-MYSQL_PASSWORD=root
 JWT_SECRET=<openssl rand -base64 32 生成的值>
+MYSQL_HOST=mysql              # compose 服务名，容器内互访
+MYSQL_PASSWORD=<你的密码>
+REDIS_HOST=redis
+RABBITMQ_HOST=rabbitmq
 CORS_ALLOWED_ORIGINS=http://localhost
+SPRING_PROFILES_ACTIVE=prod
 AI_SIMULATION_ENABLED=true
 # 可选：GEO 真实采集器（G-01），默认关闭
 # GEO_COLLECTOR_ENABLED=true
-# GEO_COLLECTOR_BRANDS=品牌A,品牌B
 # GEO_PERPLEXITY_API_KEY=pplx-xxx
 ```
 
-## 二、一键启动
+## 三、一键启动
 
 ```bash
+cp .env.example .env          # 首次：按需修改密码/JWT_SECRET
 docker compose up -d --build
 ```
 
-首次启动 MySQL 容器会执行挂载的
-`geo-saas-backend/src/main/resources/db/init.sql`：
-自动建库 `geo_saas`、建全部表（含 12. `asset_record`）、注入 `admin/admin123` 与系统配置。
+首次启动 MySQL 容器执行挂载的 `geo-saas-backend/src/main/resources/db/init.sql`：
+自动建库 `geo_saas`、建全部表（含 `asset_record`）、注入 `admin/admin123` 与系统配置。
 
-## 三、验证清单
+## 四、验证清单
 
 ```bash
-# 1. 全部容器健康
+# 1. 全部容器健康（期望 mysql/redis/rabbitmq healthy，backend/frontend running）
 docker compose ps
-#    期望：mysql/redis/rabbitmq healthy，backend/frontend running
 
-# 2. 后端健康检查（无需鉴权）
-curl http://localhost:8080/api/v1/system/health
-#    期望：HTTP 200，{"code":200,...}
+# 2. 后端启动日志（期望 "Started GeoApplication"）
+docker compose logs backend | grep -E 'Started GeoApplication|Tomcat started'
 
-# 3. 登录拿 token
-curl -s -X POST http://localhost:8080/api/v1/auth/login \
+# 3. 前端可达（唯一对外入口）
+curl -I http://127.0.0.1:8009/        # 期望 200
+
+# 4. 端到端冒烟（在后端容器内直连，或临时发布端口后执行）
+#    后端未发布宿主端口，冒烟脚本需在 compose 网络内跑：
+docker compose exec backend sh -c "cd /app && python smoke_test.py" 2>/dev/null || echo "smoke_test 未打进后端镜像，可用 curl 从容器内验证"
+docker compose exec backend curl -s http://127.0.0.1:8080/api/v1/system/health   # 期望 {"code":200,...}
+
+# 5. 登录（从 backend 容器内或经前端反代）
+curl -s -X POST http://127.0.0.1:8009/api/v1/auth/login \
   -H 'Content-Type: application/json' \
   -d '{"username":"admin","password":"admin123"}'
-#    期望：返回 data.token
-
-# 4. 端到端冒烟（复用本地脚本，直连容器后端）
-SMOKE_BASE=http://127.0.0.1:8080 python smoke_test.py
-#    期望：SUMMARY: 15 passed, 0 failed
-
-# 5. 前端可达
-curl -I http://localhost/    # 期望 200，Nginx 托管 dist
-
-# 6.（可选）GEO 采集器验证：置 GEO_COLLECTOR_ENABLED=true 并配好引擎后
-docker compose logs backend | grep "GEO 定时采集"   # 期望出现采集完成日志
 ```
 
-## 四、已完成的静态检查结论（本机执行前先核对）
+## 五、静态检查结论
 
 | 检查项 | 结论 |
 |--------|------|
-| MySQL 首次初始化 `init.sql` | ✅ 挂载 `docker-entrypoint-initdb.d`，自动建库建表（含 `asset_record`） |
-| 后端 prod 档案环境变量 | ✅ `MYSQL_HOST/USER/PASSWORD`、`REDIS_HOST`、`JWT_SECRET`（fail-fast）、`CORS_ALLOWED_ORIGINS` 齐全 |
-| RabbitMQ 联动 | ✅ compose 提供 rabbitmq 服务；prod 未排除 MQ 自动配置，可正常连接 |
-| 采集器配置 | ✅ 默认关闭（`app.geo.collector.enabled=false`），未配 key 时后端照常启动，不影响既有接口 |
-| 前端镜像 | ✅ 当前为宿主构建 `dist` 后 `COPY` 进 nginx 镜像；网络恢复后可换回 Dockerfile 内 node 多阶段构建（`npm ci` 配合 `package-lock.json` 可复现） |
+| MySQL 首次初始化 `init.sql` | ✅ 挂载 `docker-entrypoint-initdb.d`，自动建库建表 |
+| 后端 prod 档案环境变量 | ✅ `MYSQL_HOST/USER/PASSWORD`、`REDIS_HOST`、`RABBITMQ_HOST`、`JWT_SECRET`(fail-fast)、`CORS_ALLOWED_ORIGINS` 齐全 |
+| RabbitMQ 联动 | ✅ compose 提供 rabbitmq 4，容器内按服务名连接 |
+| 采集器配置 | ✅ 默认关闭，未配 key 后端照常启动 |
+| 前端镜像 | ✅ node:24-alpine 多阶段构建（npmmirror `npm ci`）+ 复用 1panel/openresty 运行 |
+| 镜像源 | ✅ Maven 走腾讯云；npm 走 npmmirror（非阿里、国内直连） |
 
-## 五、注意事项
+## 六、注意事项
 
-- **数据卷持久化**：`init.sql` 仅在 `mysql-data` 数据卷为空（首次）时执行；
-  若改过表结构需 `docker compose down -v` 后重建（会清空数据）。
-- **端口占用**：3306/6379/5672/15672/8080/80 与本地服务冲突时，先停本机实例或改 compose 端口映射。
-- **本机实测后**：把执行结果（`docker compose ps` + 冒烟输出）贴回，可更新本文件状态为「已验证」。
+- **数据卷持久化**：`mysql-data` 卷在首次（空卷）时执行 `init.sql`；改表结构需 `docker compose down -v` 重建（会清空数据）。
+- **端口占用**：唯一宿主端口是 `127.0.0.1:8009`（前端）；宿主 `80` 属 1Panel openresty。若与其它服务冲突，改 compose 前端端口映射即可。
+- **镜像复用**：`deploy.sh` 会逐一 `image inspect` 跳过已存在的镜像，减少重复拉取；首次拉取依赖网络（必要时开启代理）。

@@ -4,8 +4,8 @@
 
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/Version-v2.0.0-blue.svg)](https://github.com/wch887292/geo-saa/releases/tag/v2.0.0)
-[![Java](https://img.shields.io/badge/Java-17-orange.svg)]()
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2-brightgreen.svg)]()
+[![Java](https://img.shields.io/badge/Java-25-orange.svg)]()
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.1.1-brightgreen.svg)]()
 [![Vue](https://img.shields.io/badge/Vue-3-4FC08D.svg)]()
 
 </div>
@@ -58,10 +58,10 @@
 | 层级 | 技术 |
 |------|------|
 | 前端 | Vue 3 + Vite + Element Plus + ECharts + Pinia |
-| 后端 | Spring Boot 3.2 + Spring Security + MyBatis-Plus |
-| 数据库 | MySQL 8.0 + Redis 7 |
+| 后端 | Spring Boot 4.1.1 + Spring Security + MyBatis-Plus |
+| 数据库 | MySQL 8.4 + Redis 8 |
 | 构建 | Maven 3.9 + npm（容器内完成） |
-| 运行环境 | Docker（容器内 JDK 17 + Node.js 22） |
+| 运行环境 | Docker（容器内 JDK 25 + Node.js 24 LTS，前端运行时复用 1Panel/OpenResty） |
 
 ## 快速开始（Docker 一键部署）
 
@@ -69,7 +69,7 @@
 
 ### 前置条件
 
-- Docker Desktop（Windows/macOS）或 Docker Engine 24+（Linux）
+- Docker Engine 24+（本项目实测于 WSL2 Debian12 + 1Panel 共存环境）
 - Docker Compose 2+
 
 ### 一键启动
@@ -87,7 +87,10 @@ docker compose up -d --build
 ./deploy.sh      # Linux/macOS
 ```
 
-`docker compose up` 会一次性拉起全套服务：`mysql`、`redis`、`rabbitmq`、`backend`(8080)、`frontend`(80)、`phpmyadmin`(8081)，并自动执行数据库初始化脚本。
+`docker compose up` 会一次性拉起全套服务：`mysql`、`redis`、`rabbitmq`、`backend`、`frontend`、`phpmyadmin`，并自动执行数据库初始化脚本。
+
+> **部署形态（容器内网）**：所有服务端口在容器内，仅前端对外映射 `127.0.0.1:8009:80`；
+> 宿主 `80` 端口由 1Panel 的 OpenResty（host 网络）占用，对外访问通常经 1Panel 建站/反向代理指向 `http://127.0.0.1:8009`。
 
 ### 配置 `.env`
 
@@ -112,10 +115,10 @@ cp .env.example .env
 
 | 服务 | 地址 |
 |------|------|
-| 前端 | `http://localhost` |
-| 后端 API | `http://localhost:8080` |
-| RabbitMQ 管理 | `http://localhost:15672`（guest/guest） |
-| phpMyAdmin（MySQL 可视化） | `http://localhost:8081`（root / `.env` 的 `MYSQL_PASSWORD`，默认 `root/root`） |
+| 前端 | `http://127.0.0.1:8009`（唯一对外入口；经 1Panel 反代可达对外域名） |
+| 后端 API | 容器内 `backend:8080`（未发布宿主端口，经前端 `/api` 反代访问） |
+| RabbitMQ 管理 | 容器内 `rabbitmq:15672`（guest/guest，未发布宿主端口） |
+| phpMyAdmin（MySQL 可视化） | 容器内 `phpmyadmin`（root / `.env` 的 `MYSQL_PASSWORD`；需要时在 compose 临时发布端口） |
 | 默认管理员 | `admin` / `admin123` |
 
 ### 常用命令
@@ -147,7 +150,7 @@ npm run dev
 
 项目默认是**同域部署**：Nginx 把 `/api` 反向代理到后端，前端无需关心后端地址。若想彻底解耦（前端独立静态托管、后端独立服务器/域名），只需两处配置：
 
-1. **前端构建时注入后端地址**（跨域直连，绕过 Nginx 反代）：
+1. **前端构建时注入后端地址**（跨域直连，绕过 Nginx 反代；后端默认未发布宿主端口，需在 compose 临时发布或经 1Panel 反代提供可达地址）：
    ```bash
    VITE_API_BASE=http://<后端域名或IP>:8080 npm run build
    ```
@@ -193,7 +196,7 @@ geo-saas/
 │   ├── Dockerfile
 │   ├── vite.config.js
 │   ├── nginx/
-│   │   └── default.conf        # Nginx 部署配置
+│   │   └── default.conf        # OpenResty/Nginx 部署配置（/api 反代 backend:8080）
 │   └── src/
 │       ├── api/                 # API 请求封装
 │       ├── views/               # 页面视图
