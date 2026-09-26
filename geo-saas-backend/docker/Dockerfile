@@ -13,6 +13,8 @@ RUN unset HTTP_PROXY HTTPS_PROXY http_proxy https_proxy NO_PROXY; mvn -B clean p
 
 # 运行阶段
 FROM eclipse-temurin:25-jdk-jammy
+# 供 compose healthcheck 使用（curl 打 /api/v1/system/health）
+RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY --from=build /app/target/geo-saas-backend.jar app.jar
 EXPOSE 8080

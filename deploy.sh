@@ -129,7 +129,7 @@ sleep 15
 
 echo "========================================="
 echo -e "${GREEN}  部署完成${NC}"
-echo -e "  访问地址: ${GREEN}http://localhost${NC} (前端，唯一对外入口)"
+echo -e "  访问地址: ${GREEN}http://127.0.0.1:8009${NC} (前端，唯一对外入口)"
 echo -e "  后端 API: 容器内网 http://backend:8080（经前端 Nginx 反代 /api）"
 echo -e "  MySQL/Redis/RabbitMQ: 容器内网按服务名访问，未暴露宿主端口"
 echo ""

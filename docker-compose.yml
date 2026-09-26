@@ -14,6 +14,7 @@ services:
   mysql:
     image: mysql:8.4
     container_name: geo-saas-mysql
+    restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD:-root}
       MYSQL_DATABASE: geo_saas
@@ -35,6 +36,7 @@ services:
   redis:
     image: redis:8-alpine
     container_name: geo-saas-redis
+    restart: unless-stopped
     # 端口在容器内：不发布宿主端口
     # ports:
     #   - "6379:6379"
@@ -51,6 +53,7 @@ services:
   rabbitmq:
     image: rabbitmq:4-management-alpine
     container_name: geo-saas-rabbitmq
+    restart: unless-stopped
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-guest}
       # 变量名与 backend 保持一致（避免自定义密码时两边不一致导致后端连不上 MQ）
@@ -102,6 +105,12 @@ services:
     networks:
       - geo-saas-net
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/v1/system/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
 
   frontend:
     build:
@@ -117,6 +126,11 @@ services:
     networks:
       - geo-saas-net
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # phpMyAdmin：可视化管理 MySQL（开发/调试用），端口在容器内，不暴露宿主。
   # 需要从宿主访问时临时加 -p 8081:80 或在 1Panel 中做端口转发。
