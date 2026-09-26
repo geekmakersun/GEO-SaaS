@@ -33,7 +33,7 @@ services:
       retries: 5
 
   redis:
-    image: redis:7-alpine
+    image: redis:8-alpine
     container_name: geo-saas-redis
     # 端口在容器内：不发布宿主端口
     # ports:
