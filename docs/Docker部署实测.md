@@ -26,7 +26,7 @@ MYSQL_HOST=mysql              # compose 服务名，容器内互访
 MYSQL_PASSWORD=<你的密码>
 REDIS_HOST=redis
 RABBITMQ_HOST=rabbitmq
-CORS_ALLOWED_ORIGINS=http://localhost
+CORS_ALLOWED_ORIGINS=https://geo.13aq.com,http://localhost
 SPRING_PROFILES_ACTIVE=prod
 AI_SIMULATION_ENABLED=true
 # 可选：GEO 真实采集器（G-01），默认关闭
