@@ -136,7 +136,7 @@ docker compose down -v          # 停止并清空数据卷（重置环境）
 docker compose up -d mysql redis rabbitmq backend
 
 # 2) 前端开发服务器（端口 3000，/api 自动代理到 8080）
-cd geo-saa-frontend
+cd geo-saas-frontend
 npm install
 npm run dev
 ```
@@ -161,18 +161,17 @@ npm run dev
 ## 项目结构
 
 ```
-geo-saa/
-├── start.ps1                  # Docker 一键启动脚本
+geo-saas/
 ├── deploy.ps1                 # Docker 部署脚本（Windows）
 ├── deploy.sh                  # Docker 部署脚本（Linux/macOS）
 ├── docker-compose.yml         # Docker Compose 编排（标准启动方式）
 ├── .env.example               # 环境变量模板（复制为 .env）
-├── geo-saa-backend/           # 后端服务
+├── geo-saas-backend/           # 后端服务
 │   ├── pom.xml
 │   ├── docker/
 │   │   └── Dockerfile
 │   └── src/main/
-│       ├── java/com/geosaa/
+│       ├── java/com/geosaas/
 │       │   ├── GeoApplication.java        # 启动类
 │       │   ├── config/                     # 配置类
 │       │   ├── security/                   # JWT 安全认证
@@ -189,7 +188,7 @@ geo-saa/
 │           ├── application.yml             # 主配置
 │           ├── application-dev.yml         # 开发环境配置
 │           └── db/init.sql                 # 数据库初始化
-├── geo-saa-frontend/          # 前端服务
+├── geo-saas-frontend/          # 前端服务
 │   ├── package.json
 │   ├── Dockerfile
 │   ├── vite.config.js
@@ -275,7 +274,7 @@ ai:
 
 - RabbitMQ 默认禁用，不影响核心功能
 - 数据库默认凭据: `root` / `root`
-- 日志级别: `com.geosaa: debug`
+- 日志级别: `com.geosaas: debug`
 
 ## 常见问题
 
@@ -307,7 +306,7 @@ A: 后端 `dev` profile 已禁用 RabbitMQ；`docker-compose.yml` 中该服务�
 
 关注飞虹智 klAI 动态，获取最新开源项目更新与技术教程：
 
-![社区支持二维码](https://github.com/geo-saa/releases/download/v1.0.0-community/qrcode-community.png)
+![社区支持二维码](https://github.com/geo-saas/releases/download/v1.0.0-community/qrcode-community.png)
 
 扫码加入 **飞虹智企微小助手**，获取：
 - 技术答疑与部署指导

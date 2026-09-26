@@ -1,20 +1,31 @@
-version: '3.8'
+# =====================================================
+# GEO-SaaS 全域AI搜索优化平台 - Docker Compose（容器内网部署形态）
+# -----------------------------------------------------
+# 设计要点（Linux / 1Panel 共存适配）：
+#   1. 内部服务（mysql/redis/rabbitmq/backend/phpmyadmin）端口一律不暴露到宿主，
+#      通过 geo-saas-net 容器网络按服务名互访（"端口在容器内"）。
+#      - 彻底规避与 1Panel 自带服务撞端口（如 1Panel-MySQL 的 3306、dataease 的 8080）。
+#   2. 唯一对外入口是前端 Nginx 的 80 端口；Nginx 将 /api 反代到 backend:8080。
+#   3. 后端/前端 Dockerfile 均为多阶段构建，无需宿主机 JDK/Maven/Node，纯 Docker 一键部署。
+#   4. 生产环境必填项（JWT_SECRET / MYSQL_PASSWORD 等）缺省时启动即 fail-fast。
+# =====================================================
 
 services:
   mysql:
-    image: mysql:8.0
-    container_name: geo-saa-mysql
+    image: mysql:8.4
+    container_name: geo-saas-mysql
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD:-root}
-      MYSQL_DATABASE: geo_saa
-    ports:
-      - "3306:3306"
+      MYSQL_DATABASE: geo_saas
+    # 端口在容器内：不发布宿主端口（避免与 1Panel-MySQL 的 3306 冲突）
+    # ports:
+    #   - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
-      - ./geo-saa-backend/src/main/resources/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./geo-saas-backend/src/main/resources/db/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
-      - geo-saa-net
-    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+      - geo-saas-net
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
@@ -23,13 +34,14 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: geo-saa-redis
-    ports:
-      - "6379:6379"
+    container_name: geo-saas-redis
+    # 端口在容器内：不发布宿主端口
+    # ports:
+    #   - "6379:6379"
     volumes:
       - redis-data:/data
     networks:
-      - geo-saa-net
+      - geo-saas-net
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -37,20 +49,20 @@ services:
       retries: 5
 
   rabbitmq:
-    image: rabbitmq:3.12-management-alpine
-    container_name: geo-saa-rabbitmq
+    image: rabbitmq:4-management-alpine
+    container_name: geo-saas-rabbitmq
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-guest}
-      # 变量名与 backend 保持一致（原先这里是 RABBITMQ_PASS，后端读的是 RABBITMQ_PASSWORD，
-      # 一旦自定义密码就会两边不一致导致后端连不上 MQ）
+      # 变量名与 backend 保持一致（避免自定义密码时两边不一致导致后端连不上 MQ）
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-guest}
-    ports:
-      - "5672:5672"
-      - "15672:15672"
+    # 端口在容器内：不发布宿主端口（管理台 15672 也仅容器内可访问）
+    # ports:
+    #   - "5672:5672"
+    #   - "15672:15672"
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
     networks:
-      - geo-saa-net
+      - geo-saas-net
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
       interval: 10s
@@ -59,15 +71,10 @@ services:
 
   backend:
     build:
-      context: ./geo-saa-backend
+      context: ./geo-saas-backend
       dockerfile: docker/Dockerfile
-      args:
-        HTTP_PROXY: ${BUILD_PROXY:-}
-        HTTPS_PROXY: ${BUILD_PROXY:-}
-        http_proxy: ${BUILD_PROXY:-}
-        https_proxy: ${BUILD_PROXY:-}
-        NO_PROXY: localhost,127.0.0.1
-    container_name: geo-saa-backend
+    image: geo-saas-backend
+    container_name: geo-saas-backend
     environment:
       SPRING_PROFILES_ACTIVE: prod
       MYSQL_HOST: mysql
@@ -77,13 +84,14 @@ services:
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_USER: ${RABBITMQ_USER:-guest}
       RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-guest}
-      # prod profile 下这两项没有默认值，缺失会导致启动失败（这是刻意的 fail-fast 设计）
+      # prod profile 下没有默认值，缺失会导致启动失败（刻意 fail-fast）
       JWT_SECRET: ${JWT_SECRET:?请先在 .env 中设置 JWT_SECRET，可用 openssl rand -base64 32 生成}
       CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost}
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       AI_SIMULATION_ENABLED: ${AI_SIMULATION_ENABLED:-true}
-    ports:
-      - "8080:8080"
+    # 端口在容器内：不发布宿主端口（前端 Nginx 通过内部网络反代 /api 到 backend:8080）
+    # ports:
+    #   - "808009:8080"
     depends_on:
       mysql:
         condition: service_healthy
@@ -92,45 +100,40 @@ services:
       rabbitmq:
         condition: service_healthy
     networks:
-      - geo-saa-net
+      - geo-saas-net
     restart: unless-stopped
 
   frontend:
     build:
-      context: ./geo-saa-frontend
+      context: ./geo-saas-frontend
       dockerfile: Dockerfile
-      args:
-        HTTP_PROXY: ${BUILD_PROXY:-}
-        HTTPS_PROXY: ${BUILD_PROXY:-}
-        http_proxy: ${BUILD_PROXY:-}
-        https_proxy: ${BUILD_PROXY:-}
-        NO_PROXY: localhost,127.0.0.1
-    container_name: geo-saa-frontend
+    image: geo-saas-frontend
+    container_name: geo-saas-frontend
+    # 唯一对外入口：前端 Nginx 监听宿主 80，将 /api 反代到内部 backend:8080
     ports:
-      - "80:80"
+      - "127.0.0.1:8009:80"
     depends_on:
       - backend
     networks:
-      - geo-saa-net
+      - geo-saas-net
     restart: unless-stopped
 
-  # phpMyAdmin：可视化管理 MySQL（开发/调试用）
-  # 访问 http://localhost:8081，登录用 root + .env 的 MYSQL_PASSWORD（默认 root/root）
-  # 密码不在环境变量预填（避免入库敏感信息），登录表单手动输入。
+  # phpMyAdmin：可视化管理 MySQL（开发/调试用），端口在容器内，不暴露宿主。
+  # 需要从宿主访问时临时加 -p 8081:80 或在 1Panel 中做端口转发。
   phpmyadmin:
     image: phpmyadmin:latest
-    container_name: geo-saa-phpmyadmin
+    container_name: geo-saas-phpmyadmin
     environment:
       PMA_HOST: mysql
       PMA_PORT: 3306
       UPLOAD_LIMIT: 128M
-    ports:
-      - "8081:80"
+    # ports:
+    #   - "8081:80"
     depends_on:
       mysql:
         condition: service_healthy
     networks:
-      - geo-saa-net
+      - geo-saas-net
     restart: unless-stopped
 
 volumes:
@@ -139,5 +142,5 @@ volumes:
   rabbitmq-data:
 
 networks:
-  geo-saa-net:
+  geo-saas-net:
     driver: bridge

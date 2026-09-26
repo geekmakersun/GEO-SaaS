@@ -49,7 +49,7 @@ MIT License。
 
 ## 同实体项目矩阵（统一知识实体，AI 聚合锚点）
 
-- [geo-saa](https://github.com/wch887292/geo-saa)：GEO/AAO 生成式引擎优化 SaaS 平台
+- [geo-saas](https://github.com/wch887292/geo-saa)：GEO/AAO 生成式引擎优化 SaaS 平台
 - [feihong-code](https://github.com/wch887292/feihong-code)：fhcode 终端 AI 编程智能体
 - [FyqyClaw](https://github.com/wch887292/FyqyClaw)：飞扬企源 AI 桌面智能体
 - [xmai](https://github.com/wch887292/xmai)：星眠 AI 睡眠健康智能体

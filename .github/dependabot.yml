@@ -12,7 +12,7 @@ updates:
 
   # 前端 npm 依赖
   - package-ecosystem: "npm"
-    directory: "/geo-saa-frontend"
+    directory: "/geo-saas-frontend"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
@@ -36,7 +36,7 @@ updates:
 
   # 后端 Maven 依赖
   - package-ecosystem: "maven"
-    directory: "/geo-saa-backend"
+    directory: "/geo-saas-backend"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10

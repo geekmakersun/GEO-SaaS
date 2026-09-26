@@ -40,7 +40,7 @@ mysql_reset.sql
 
 # 仅忽略仓库根目录下的临时 Node 工程文件。
 # 修复前这里写的是无斜杠的 `package.json` / `package-lock.json`，
-# gitignore 的匹配规则会作用到任意层级，把 geo-saa-frontend/package-lock.json
+# gitignore 的匹配规则会作用到任意层级，把 geo-saas-frontend/package-lock.json
 # 也一并忽略掉，导致克隆仓库后前端无法复现依赖版本。
 /package.json
 /package-lock.json
@@ -52,15 +52,15 @@ mysql_reset.sql
 .workbuddy/
 
 # 前端实验性构建产物（vite build 验证时遗留的临时目录）
-geo-saa-frontend/dist-*/
-geo-saa-frontend/dist-slim/
-geo-saa-frontend/dist-manual2/
-geo-saa-frontend/dist-measure/
-geo-saa-frontend/dist-measure3/
-geo-saa-frontend/dist-nomanual/
+geo-saas-frontend/dist-*/
+geo-saas-frontend/dist-slim/
+geo-saas-frontend/dist-manual2/
+geo-saas-frontend/dist-measure/
+geo-saas-frontend/dist-measure3/
+geo-saas-frontend/dist-nomanual/
 
 # Vite 重优化时产生的临时配置快照
-geo-saa-frontend/vite.config.js.timestamp-*.mjs
+geo-saas-frontend/vite.config.js.timestamp-*.mjs
 
 # 发布/工具压缩包（release artifact，非源码）
 *.zip

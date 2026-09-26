@@ -1,6 +1,6 @@
 # GEO-SaaS 平台 API 文档
 
-> 本文档依据 `geo-saa-backend/src/main/java/com/geosaa/modules/**/controller` 实际实现生成（2026-08-13 校订），
+> 本文档依据 `geo-saas-backend/src/main/java/com/geosaas/modules/**/controller` 实际实现生成（2026-08-13 校订），
 > 若接口与代码不一致，以代码为准。
 
 ## 基础信息

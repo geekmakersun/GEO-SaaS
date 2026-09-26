@@ -9,7 +9,7 @@
 $ErrorActionPreference = "Continue"
 $GREEN = "Green"; $YELLOW = "Yellow"; $RED = "Red"; $CYAN = "Cyan"
 $ROOT = $PSScriptRoot
-$JAR = Join-Path $ROOT "geo-saa-backend\target\geo-saa-backend.jar"
+$JAR = Join-Path $ROOT "geo-saas-backend\target\geo-saas-backend.jar"
 
 function Write-Info { param($m) Write-Host "  [INFO] $m" -ForegroundColor $GREEN }
 function Write-Warn { param($m) Write-Host "  [WARN] $m" -ForegroundColor $YELLOW }
@@ -56,14 +56,14 @@ Write-Host "`n[3/5] 检查后端 JAR" -ForegroundColor $GREEN
 if (-not (Test-Path $JAR)) {
     if (Get-Command mvn -ErrorAction SilentlyContinue) {
         Write-Info "后端 JAR 缺失，使用宿主 Maven 构建（依赖 ~/.m2/settings.xml 镜像配置）..."
-        Push-Location (Join-Path $ROOT "geo-saa-backend")
+        Push-Location (Join-Path $ROOT "geo-saas-backend")
         try {
             mvn clean package -DskipTests
             if ($LASTEXITCODE -ne 0) { throw "Maven 构建失败" }
         } finally { Pop-Location }
     } else {
         Write-Warn "后端 JAR 缺失且未安装 Maven。"
-        Write-Warn "  方案A: 安装 Maven 后构建（cd geo-saa-backend && mvn clean package -DskipTests）"
+        Write-Warn "  方案A: 安装 Maven 后构建（cd geo-saas-backend && mvn clean package -DskipTests）"
         Write-Warn "  方案B: 在后端 Dockerfile 启用注释内的多阶段构建，以纯 Docker 方式构建"
         Write-Warn "继续尝试 docker compose 构建（COPY 缺失 jar 时镜像构建会失败）。"
     }

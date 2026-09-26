@@ -24,7 +24,7 @@ jobs:
           distribution: 'temurin'
           cache: maven
       - name: Maven 编译与测试
-        working-directory: geo-saa-backend
+        working-directory: geo-saas-backend
         # 单测为纯 Mockito（无 Spring 上下文/DB 依赖），覆盖评分公式 /
         # simulation 闸门 / 九战术校验 / 指标聚合，全部通过才允许合并
         run: mvn -B test
@@ -40,9 +40,9 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: geo-saa-frontend/package-lock.json
+          cache-dependency-path: geo-saas-frontend/package-lock.json
       - name: 安装依赖并构建（锁版本）
-        working-directory: geo-saa-frontend
+        working-directory: geo-saas-frontend
         run: |
           # Windows 生成的 package-lock.json 在 Linux 上 npm ci 偶发缺 rollup
           # 原生 optional 模块（npm#4828，ci 退出码为 0 但构建时报
@@ -93,16 +93,16 @@ jobs:
       - name: 安装 MySQL 客户端
         run: sudo apt-get update && sudo apt-get install -y mysql-client
       - name: 导入数据库结构及初始数据
-        run: mysql -h 127.0.0.1 -u root -proot < geo-saa-backend/src/main/resources/db/init.sql
+        run: mysql -h 127.0.0.1 -u root -proot < geo-saas-backend/src/main/resources/db/init.sql
       - name: 启动后端（dev，RabbitMQ 关闭）
-        working-directory: geo-saa-backend
+        working-directory: geo-saas-backend
         env:
           SPRING_PROFILES_ACTIVE: dev
           MYSQL_HOST: 127.0.0.1
           MYSQL_PORT: 3306
           MYSQL_USER: root
           MYSQL_PASSWORD: root
-          MYSQL_DATABASE: geo_saa
+          MYSQL_DATABASE: geo_saas
           REDIS_HOST: 127.0.0.1
           REDIS_PORT: 6379
           AI_SIMULATION_ENABLED: 'true'

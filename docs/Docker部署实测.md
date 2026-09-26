@@ -28,8 +28,8 @@ docker compose up -d --build
 ```
 
 首次启动 MySQL 容器会执行挂载的
-`geo-saa-backend/src/main/resources/db/init.sql`：
-自动建库 `geo_saa`、建全部表（含 12. `asset_record`）、注入 `admin/admin123` 与系统配置。
+`geo-saas-backend/src/main/resources/db/init.sql`：
+自动建库 `geo_saas`、建全部表（含 12. `asset_record`）、注入 `admin/admin123` 与系统配置。
 
 ## 三、验证清单
 
