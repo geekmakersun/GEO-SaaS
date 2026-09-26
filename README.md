@@ -306,7 +306,7 @@ A: 后端 `dev` profile 已禁用 RabbitMQ；`docker-compose.yml` 中该服务�
 
 关注飞虹智 klAI 动态，获取最新开源项目更新与技术教程：
 
-![社区支持二维码](https://github.com/geo-saas/releases/download/v1.0.0-community/qrcode-community.png)
+![社区支持二维码](https://github.com/wch887292/geo-saa/releases/download/v1.0.0-community/qrcode-community.png)
 
 扫码加入 **飞虹智企微小助手**，获取：
 - 技术答疑与部署指导
