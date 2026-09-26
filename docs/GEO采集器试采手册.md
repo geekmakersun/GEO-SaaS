@@ -47,7 +47,7 @@ docker compose up -d --build backend
 ```bash
 # 登录拿 token
 TOKEN=$(curl -s -X POST http://127.0.0.1:8009/api/v1/auth/login \
-  -H 'Content-Type: application/json' -d '{"username":"admin","password":"admin123"}' \
+  -H 'Content-Type: application/json' -d '{"username":"admin","password":"GeoSaas_9aa5bc386f0e"}' \
   | python -c "import sys,json;print(json.load(sys.stdin)['data']['token'])")
 
 # 触发采集

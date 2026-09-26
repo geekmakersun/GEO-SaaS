@@ -134,6 +134,6 @@ echo -e "  后端 API: 容器内网 http://backend:8080（经前端 Nginx 反代
 echo -e "  MySQL/Redis/RabbitMQ: 容器内网按服务名访问，未暴露宿主端口"
 echo ""
 echo "  默认管理员账号: admin"
-echo "  默认管理员密码: admin123"
+echo "  默认管理员密码: GeoSaas_9aa5bc386f0e"
 echo -e "  停止服务: ${YELLOW}docker compose down${NC}"
 echo "========================================="

@@ -119,7 +119,7 @@ cp .env.example .env
 | 后端 API | 容器内 `backend:8080`（未发布宿主端口，经前端 `/api` 反代访问） |
 | RabbitMQ 管理 | 容器内 `rabbitmq:15672`（guest/guest，未发布宿主端口） |
 | phpMyAdmin（MySQL 可视化） | 容器内 `phpmyadmin`（root / `.env` 的 `MYSQL_PASSWORD`；需要时在 compose 临时发布端口） |
-| 默认管理员 | `admin` / `admin123` |
+| 默认管理员 | `admin` / 见下文（默认密码已改为强口令，生产务必修改） |
 
 ### 常用命令
 

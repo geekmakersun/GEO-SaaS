@@ -2,7 +2,7 @@
 
 > 状态：**已验证（2026-09）**—— WSL2 Debian12 + 1Panel 共存环境下，
 > `docker compose up -d --build` 全栈 6 容器健康，后端 Java 25 启动成功，
-> 前端 `http://127.0.0.1:8009` 返回 200，`admin/admin123` 登录可用。
+> 前端 `http://127.0.0.1:8009` 返回 200，`admin/GeoSaas_9aa5bc386f0e` 登录可用。
 
 ## 一、部署形态（重要）
 
@@ -42,7 +42,7 @@ docker compose up -d --build
 ```
 
 首次启动 MySQL 容器执行挂载的 `geo-saas-backend/src/main/resources/db/init.sql`：
-自动建库 `geo_saas`、建全部表（含 `asset_record`）、注入 `admin/admin123` 与系统配置。
+自动建库 `geo_saas`、建全部表（含 `asset_record`）、注入 `admin/GeoSaas_9aa5bc386f0e` 与系统配置。
 
 ## 四、验证清单
 
@@ -64,7 +64,7 @@ docker compose exec backend curl -s http://127.0.0.1:8080/api/v1/system/health  
 # 5. 登录（从 backend 容器内或经前端反代）
 curl -s -X POST http://127.0.0.1:8009/api/v1/auth/login \
   -H 'Content-Type: application/json' \
-  -d '{"username":"admin","password":"admin123"}'
+  -d '{"username":"admin","password":"GeoSaas_9aa5bc386f0e"}'
 ```
 
 ## 五、静态检查结论

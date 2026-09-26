@@ -2,7 +2,7 @@
 -- Geo-SaaS 数据库初始化脚本
 -- 数据库: geo_saas
 -- 字符集: utf8mb4
--- 注意：下方 admin 账号（admin/admin123）为公开演示凭据，生产部署后务必第一时间修改密码。
+-- 注意：下方 admin 账号为默认凭据（密码见 README「默认管理员」），生产部署后务必第一时间修改。
 -- ============================================
 
 CREATE DATABASE IF NOT EXISTS geo_saas DEFAULT CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -192,10 +192,10 @@ CREATE TABLE system_audit_log (
 
 -- ----------------------------
 -- 初始化数据: 默认管理员账号
--- 密码: admin123 (BCrypt加密)
+-- 密码: BCrypt 加密（默认见 README，生产务必修改）
 -- ----------------------------
 INSERT INTO user_info (username, password, nickname, role, status) VALUES
-('admin', '$2b$10$dcgzsX.fhPkxrBlI2T1Md.K1yV2FARNMIJjBCm.8q1EL0LqVpicOu', '系统管理员', 'ADMIN', 1);
+('admin', '$2y$10$Saw3RA3pes9KcGf/YX4JnuOicG4.R.xf4ECE/UeiEEBp9mLdY6mFi', '系统管理员', 'ADMIN', 1);
 
 -- ----------------------------
 -- 初始化数据: 默认角色权限
