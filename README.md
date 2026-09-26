@@ -106,7 +106,7 @@ cp .env.example .env
 |------|--------|------|
 | `JWT_SECRET` | 无（必填） | JWT 签名密钥，用 `openssl rand -base64 32` 生成 |
 | `MYSQL_PASSWORD` | `root` | MySQL root 密码（与 backend 一致） |
-| `CORS_ALLOWED_ORIGINS` | `http://localhost` | 允许跨域访问的前端域名 |
+| `CORS_ALLOWED_ORIGINS` | `https://geo.13aq.com,http://localhost` | 允许跨域访问的前端域名（换域名须在此追加） |
 | `BUILD_PROXY` | 空 | 可选：构建期代理，仅容器出网受限时使用 |
 
 > 后端在 `prod` profile 下，缺失 `JWT_SECRET` 会故意 fail-fast 拒绝启动（安全设计）。
