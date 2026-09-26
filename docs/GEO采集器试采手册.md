@@ -1,7 +1,7 @@
 # GEO 真实采集器 · 首次试采手册（G-01 Runbook）
 
 > 适用：拿到 AI 搜索引擎 API Key 后，3 分钟完成首次真实试采。
-> 前置条件：后端可启动（MySQL + Redis），`POST /api/v1/monitor/collect` 已就绪（提交 `0134b0b`）。
+> 前置条件：后端可启动（MySQL + Redis），（注：后端在容器内网、未发布宿主端口，下方 curl 均经前端反代入口 http://127.0.0.1:8009 访问 /api），`POST /api/v1/monitor/collect` 已就绪（提交 `0134b0b`）。
 
 ## 一、准备 Key（二选一）
 
@@ -46,12 +46,12 @@ docker compose up -d --build backend
 
 ```bash
 # 登录拿 token
-TOKEN=$(curl -s -X POST http://127.0.0.1:8080/api/v1/auth/login \
+TOKEN=$(curl -s -X POST http://127.0.0.1:8009/api/v1/auth/login \
   -H 'Content-Type: application/json' -d '{"username":"admin","password":"admin123"}' \
   | python -c "import sys,json;print(json.load(sys.stdin)['data']['token'])")
 
 # 触发采集
-curl -s -X POST http://127.0.0.1:8080/api/v1/monitor/collect \
+curl -s -X POST http://127.0.0.1:8009/api/v1/monitor/collect \
   -H "Authorization: Bearer $TOKEN"
 ```
 
@@ -75,7 +75,7 @@ curl -s -X POST http://127.0.0.1:8080/api/v1/monitor/collect \
 ## 五、验证监测端展示
 
 ```bash
-curl -s "http://127.0.0.1:8080/api/v1/monitor/core-metrics?brandName=飞虹智" \
+curl -s "http://127.0.0.1:8009/api/v1/monitor/core-metrics?brandName=飞虹智" \
   -H "Authorization: Bearer $TOKEN"
 ```
 
