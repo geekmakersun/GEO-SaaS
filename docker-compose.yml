@@ -121,7 +121,7 @@ services:
   # phpMyAdmin：可视化管理 MySQL（开发/调试用），端口在容器内，不暴露宿主。
   # 需要从宿主访问时临时加 -p 8081:80 或在 1Panel 中做端口转发。
   phpmyadmin:
-    image: phpmyadmin:latest
+    image: phpmyadmin:5.2.3
     container_name: geo-saas-phpmyadmin
     environment:
       PMA_HOST: mysql
