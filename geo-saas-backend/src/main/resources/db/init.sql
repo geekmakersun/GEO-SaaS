@@ -195,7 +195,7 @@ CREATE TABLE system_audit_log (
 -- 密码: BCrypt 加密（默认见 README，生产务必修改）
 -- ----------------------------
 INSERT INTO user_info (username, password, nickname, role, status) VALUES
-('admin', '$2y$10$Saw3RA3pes9KcGf/YX4JnuOicG4.R.xf4ECE/UeiEEBp9mLdY6mFi', '系统管理员', 'ADMIN', 1);
+('admin', '$2y$10$astH5m09w1.nNjXlT0/cy.HTINavjvj3nFcrgKaXb9guvZvSn06SG', '系统管理员', 'ADMIN', 1);
 
 -- ----------------------------
 -- 初始化数据: 默认角色权限

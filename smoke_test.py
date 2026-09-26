@@ -48,7 +48,7 @@ def summarize(j):
     return "(json type %s)" % type(j).__name__
 
 # 1) login
-lc, lt, lj = req("POST", "/api/v1/auth/login", body={"username":"admin","password":"GeoSaas_9aa5bc386f0e"})
+lc, lt, lj = req("POST", "/api/v1/auth/login", body={"username":"admin","password":"sbc19921107"})
 print("LOGIN            /api/v1/auth/login            -> %s  %s" % (lc, summarize(lj)))
 token = None
 if lj and isinstance(lj, dict):
