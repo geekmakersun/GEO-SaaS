@@ -20,7 +20,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # ---------- 镜像清单 ----------
 # 外部拉取的基础镜像（运行服务）
-RUNTIME_IMAGES=( "mysql:8.4" "redis:7-alpine" "rabbitmq:4-management-alpine" "phpmyadmin:latest" )
+RUNTIME_IMAGES=( "mysql:8.4" "redis:8-alpine" "rabbitmq:4-management-alpine" "phpmyadmin:5.2.3" )
 # 本地多阶段构建的镜像
 BUILT_IMAGES=( "geo-saas-backend" "geo-saas-frontend" )
 
