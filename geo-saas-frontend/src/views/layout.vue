@@ -16,7 +16,7 @@
       >
         <el-menu-item index="/dashboard">
           <el-icon><Odometer /></el-icon>
-          <template #title>Dashboard</template>
+          <template #title>仪表盘</template>
         </el-menu-item>
         <el-menu-item index="/diagnose">
           <el-icon><Search /></el-icon>

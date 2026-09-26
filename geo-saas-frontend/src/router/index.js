@@ -17,7 +17,7 @@ const routes = [
         path: 'dashboard',
         name: 'Dashboard',
         component: () => import('@/views/dashboard/index.vue'),
-        meta: { title: '工作台首页', icon: 'Odometer' }
+        meta: { title: '仪表盘', icon: 'Odometer' }
       },
       {
         path: 'diagnose',
